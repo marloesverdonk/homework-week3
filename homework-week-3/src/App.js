@@ -1,26 +1,62 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import './App.css';
+import { connect } from 'react-redux'
+import ModelDetails from './ModelDetails'
 
-export default class App extends Component {
-  render(){
-  return (
-    <div className="App">
-      <header className="App-header">
-        Home computer models
-      </header>
-      <main>
-    <select>
-      <option value="">-- pick a model --</option>
-      <option value={data[0].name}> {data[0].name} ({data[0].year})</option>
-      <option value={data[1].name}> {data[1].name} ({data[1].year})</option>
-      <option value={data[2].name}> {data[2].name} ({data[2].year})</option>
-      <option value={data[3].name}> {data[3].name} ({data[3].year})</option>
-    </select>
-      </main>
-    </div>
-  );
+class App extends Component {
+  state = {
+    selectedValue: "",
+  }
+
+  updateSelection = (event) => {
+    const value = event.target.value;
+
+    this.setState({
+      selectedValue: value
+    });
+  }
+
+  addClicked = (event) => {
+    this.props.dispatch({
+      type: 'ADD_MODEL',
+      payload: {
+        name: this.state.selectedValue
+      }
+    })
+  }
+
+  render() {
+    console.log(this.props.computerModels)
+    return (
+      <div className="App">
+        <header className="App-header">
+          <h1>Home computer models</h1>
+        </header>
+        <main>
+          <select onChange={this.updateSelection} value={this.state.selectedValue}>
+            <option value="">-- pick a model --</option>
+            {
+              data.map((computerModel) => {
+                return (
+                  <option value={computerModel.name} key={computerModel.name}> {computerModel.name} ({computerModel.year})</option>
+                )
+              })
+            }
+          </select>
+          <button onClick={this.addClicked}>Add</button>
+            <ModelDetails/>
+        </main>
+      </div>
+    );
+  }
 }
+
+const mapStateToProps = (state) => {
+  return {
+    computerModels: state
+  }
 }
+
 
 const data = [
   {
@@ -48,3 +84,5 @@ const data = [
     origin: "USA"
   }
 ]
+
+export default connect(mapStateToProps)(App)
